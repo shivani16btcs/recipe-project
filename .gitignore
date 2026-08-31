@@ -1,0 +1,12 @@
+node_modules
+.svelte-kit
+.vite
+packages
+recipe-finder/node_modules
+recipe-components/node_modules
+recipe-finder/.svelte-kit
+recipe-components/dist
+recipe-finder/dist
+*.log
+.DS_Store
+.history

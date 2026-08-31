@@ -1,0 +1,31 @@
+:host {
+  display: inline-block;
+}
+
+button {
+  border: none;
+  border-radius: 999px;
+  padding: 0.8rem 1.4rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+.primary {
+  background: #1d4139;
+  color: white;
+}
+
+.secondary {
+  background: #edf3ef;
+  color: #1d4139;
+}
+
+.danger {
+  background: #f7e5e2;
+  color: #7a2c2c;
+}

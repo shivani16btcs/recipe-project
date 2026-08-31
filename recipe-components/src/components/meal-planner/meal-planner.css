@@ -1,0 +1,50 @@
+:host {
+  display: block;
+}
+
+.planner-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.day-box {
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid rgba(35, 59, 61, 0.08);
+  padding: 1rem;
+  box-shadow: 0 8px 24px rgba(25,45,35,0.05);
+}
+
+.day-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.8rem;
+}
+
+h4 {
+  margin: 0;
+  color: #1d2b2d;
+}
+
+button {
+  border: none;
+  background: #f7e5e2;
+  color: #7a2c2c;
+  border-radius: 999px;
+  padding: 0.4rem 0.75rem;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.meal-content {
+  background: #eef5ef;
+  border-radius: 10px;
+  padding: 0.75rem;
+}
+
+p {
+  margin: 0;
+  color: #556568;
+}

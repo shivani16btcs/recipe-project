@@ -1,0 +1,87 @@
+:host {
+  display: block;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, rgba(255,255,255,0.96), rgba(246,244,239,0.96));
+  border: 1px solid rgba(35, 59, 61, 0.08);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(25, 45, 35, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 30px rgba(25, 45, 35, 0.12);
+}
+
+.image-wrap {
+  position: relative;
+  height: 220px;
+  background: #e9ecef;
+}
+
+.image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  color: #5c6b6d;
+  font-weight: 600;
+}
+
+.favoriteButton {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  font-size: 1.3rem;
+  background: rgba(19, 27, 28, 0.72);
+  color: #fff;
+  cursor: pointer;
+}
+
+.favoriteButton.active {
+  background: rgba(223, 78, 58, 0.95);
+}
+
+.content {
+  padding: 1rem 1rem 1.25rem;
+}
+
+.eyebrow {
+  display: inline-block;
+  background: rgba(122, 177, 123, 0.14);
+  color: #2d5e3d;
+  border-radius: 999px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+h3 {
+  margin: 0.8rem 0 0.5rem;
+  font-size: 1.3rem;
+  color: #1f2d2f;
+}
+
+p {
+  margin: 0;
+  line-height: 1.5;
+  color: #4f5d5f;
+  min-height: 72px;
+}
