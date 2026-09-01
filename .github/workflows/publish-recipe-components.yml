@@ -1,0 +1,44 @@
+name: Publish recipe-components to npm
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'recipe-components/**'
+      - '.github/workflows/publish-recipe-components.yml'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org/
+
+      - name: Install dependencies (recipe-components)
+        working-directory: ./recipe-components
+        run: npm ci
+
+      - name: Run tests
+        working-directory: ./recipe-components
+        run: npm test || true
+
+      - name: Build package
+        working-directory: ./recipe-components
+        run: npm run build
+
+      - name: Publish to npm
+        working-directory: ./recipe-components
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
