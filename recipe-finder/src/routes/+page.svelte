@@ -192,6 +192,11 @@
     selectedCategory = event.detail;
   };
 
+  const handleFavoriteToggle = (event: Event) => {
+    const customEvent = event as CustomEvent<{ title: string; favorite: boolean }>;
+    updateFavorite(customEvent.detail.title, customEvent.detail.favorite);
+  };
+
   const categoryOptions = ['all', 'beef', 'chicken', 'dessert', 'breakfast', 'vegan'];
 
 $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
@@ -206,22 +211,21 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
 <svelte:head>
   <title>Recipe Finder</title>
 </svelte:head>
-
 <div class="page-shell">
   <header class="topbar">
     <div>
-      <p class="eyebrow" on:click={startCreateRecipe}>add a recipe</p>
+      <button type="button" class="eyebrow-button" >Healthy Meal Planner</button>
       <h1>Recipe Finder & Meal Planner</h1>
     </div>
     <div class="actions">
-      <app-button label={showFavorites ? 'All' : 'Favorites'} variant="secondary" on:clickAction={() => (showFavorites = !showFavorites)} />
-      <app-button label="Add recipe" variant="primary" on:clickAction={startCreateRecipe} />
+      <app-button label={showFavorites ? 'All' : 'Favorites'} variant="secondary" on:clickAction={() => (showFavorites = !showFavorites)}></app-button>
+      <app-button label="Add recipe" variant="primary" on:clickAction={startCreateRecipe}></app-button>
     </div>
   </header>
 
   <section class="toolbar">
-    <recipe-search value={searchTerm} placeholder="Search recipes" on:searchInput={handleSearch} />
-    <recipe-filter selected={selectedCategory} options={categoryOptions} on:filterChange={handleFilter} />
+    <recipe-search value={searchTerm} placeholder="Search recipes" on:searchInput={handleSearch}></recipe-search>
+    <recipe-filter selected={selectedCategory} options={categoryOptions} on:filterChange={handleFilter}></recipe-filter>
   </section>
 
   <section class="stats">
@@ -231,7 +235,7 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
   </section>
 
   {#if showForm}
-    <div class="backdrop" on:click={() => (showForm = false)}></div>
+    <button type="button" class="backdrop" aria-label="Close recipe form" on:click={() => (showForm = false)}></button>
     <section class="panel modal-panel" role="dialog" aria-modal="true">
       <h2>{editingIndex !== null ? 'Edit recipe' : 'Add recipe'}</h2>
       <RecipeForm
@@ -262,7 +266,7 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
                 cuisine={recipe.strArea || 'International'}
                 favorite={favorites.includes(recipe.strMeal)}
                 on:selectRecipe={() => openRecipe(recipe)}
-                on:toggleFavorite={(event) => updateFavorite(recipe.strMeal, event.detail.favorite)}
+                on:toggleFavorite={handleFavoriteToggle}
               >
               <div slot="meta" class="meta-bar">
                 <button class="category-link" on:click={() => { selectedCategory = (recipe.strCategory || 'General').toLowerCase(); }}>
@@ -331,13 +335,17 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
     margin-bottom: 1.5rem;
   }
 
-  .eyebrow {
+  .eyebrow-button {
     margin: 0 0 0.4rem;
+    padding: 0;
+    border: none;
+    background: transparent;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     font-size: 0.72rem;
     font-weight: 700;
     color: #5f7d68;
+    cursor: pointer;
   }
 
   h1 {
@@ -350,6 +358,16 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
   .panel,
   .content-grid {
     margin-top: 1.5rem;
+  }
+
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    z-index: 2;
   }
 
   .toolbar {
