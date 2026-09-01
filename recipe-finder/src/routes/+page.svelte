@@ -232,7 +232,7 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
   <section class="toolbar">
     <recipe-search value={searchTerm} placeholder="Search recipes" on:searchInput={handleSearch}></recipe-search>
 
-    {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-filter')}
+    {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-filter') && !window.recipeComponentsFailed}
       <recipe-filter selected={selectedCategory} options={categoryOptions} on:filterChange={handleFilter}></recipe-filter>
     {:else}
       <label class="filter-wrap native-filter">
@@ -277,7 +277,7 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
       {:else}
         <div class="recipe-grid">
           {#each displayedRecipes as recipe}
-            {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-card')}
+            {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-card') && !window.recipeComponentsFailed}
               <recipe-card
                 recipe-title={recipe.strMeal}
                 image={recipe.strMealThumb}
@@ -656,5 +656,6 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
     }
   }
 </style>
-/ /   F o r c e   r e d e p l o y   0 9 / 0 2 / 2 0 2 6   0 0 : 4 3 : 1 9  
+/ /   F o r c e   r e d e p l o y   0 9 / 0 2 / 2 0 2 6   0 0 : 4 3 : 1 9 
+ 
  
