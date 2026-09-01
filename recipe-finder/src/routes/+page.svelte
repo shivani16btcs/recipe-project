@@ -191,7 +191,7 @@
 
   <section class="toolbar">
     <recipe-search value={searchTerm} placeholder="Search recipes" on:searchInput={handleSearch} />
-    <recipe-filter value={selectedCategory} options={categoryOptions} on:filterChange={handleFilter} />
+    <recipe-filter selected={selectedCategory} options={categoryOptions} on:filterChange={handleFilter} />
   </section>
 
   <section class="stats">
@@ -224,15 +224,15 @@
       {:else}
         <div class="recipe-grid">
           {#each filteredRecipes as recipe}
-            <recipe-card
-              title={recipe.strMeal}
-              image={recipe.strMealThumb}
-              description={recipe.strInstructions ? recipe.strInstructions.slice(0, 120) + '…' : 'Fresh and easy to prepare.'}
-              cuisine={recipe.strArea || 'International'}
-              favorite={favorites.includes(recipe.strMeal)}
-              on:selectRecipe={() => openRecipe(recipe)}
-              on:toggleFavorite={(event) => updateFavorite(recipe.strMeal, event.detail.favorite)}
-            >
+              <recipe-card
+                recipe-title={recipe.strMeal}
+                image={recipe.strMealThumb}
+                description={recipe.strInstructions ? recipe.strInstructions.slice(0, 120) + '…' : 'Fresh and easy to prepare.'}
+                cuisine={recipe.strArea || 'International'}
+                favorite={favorites.includes(recipe.strMeal)}
+                on:selectRecipe={() => openRecipe(recipe)}
+                on:toggleFavorite={(event) => updateFavorite(recipe.strMeal, event.detail.favorite)}
+              >
               <div slot="meta" class="meta-bar">
                 <span>{recipe.strCategory || 'General'}</span>
                 {#if customRecipes.some((item) => item.strMeal === recipe.strMeal)}
@@ -264,7 +264,7 @@
   </section>
 
   {#if selectedRecipe}
-    <recipe-modal open={true} title={selectedRecipe.strMeal} on:closeModal={closeRecipe}>
+    <recipe-modal open={true} modal-title={selectedRecipe.strMeal} on:closeModal={closeRecipe}>
       <div class="detail-layout">
         <img src={selectedRecipe.strMealThumb} alt={selectedRecipe.strMeal} class="detail-image" />
         <div>
@@ -273,6 +273,9 @@
           <p>{makeIngredientList(selectedRecipe)}</p>
           <h3>Instructions</h3>
           <p>{makeInstructionText(selectedRecipe)}</p>
+          <div style="margin-top:1rem">
+            <a class="mini-button" href={`/recipes/${selectedRecipe.idMeal}`}>View full recipe page</a>
+          </div>
         </div>
       </div>
     </recipe-modal>

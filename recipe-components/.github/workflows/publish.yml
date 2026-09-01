@@ -1,0 +1,32 @@
+"dependencies": {
+  "@recipe-works/recipe-components": "^1.0.1"
+}name: Publish Stencil package
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install
+        run: npm ci
+        working-directory: ./
+      - name: Build
+        run: npm run build
+        working-directory: ./
+      - name: Publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
+          npm publish --access public
+        working-directory: ./
