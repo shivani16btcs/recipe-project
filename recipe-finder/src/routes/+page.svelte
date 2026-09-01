@@ -277,6 +277,7 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
       {:else}
         <div class="recipe-grid">
           {#each displayedRecipes as recipe}
+            {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-card')}
               <recipe-card
                 recipe-title={recipe.strMeal}
                 image={recipe.strMealThumb}
@@ -286,16 +287,48 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
                 on:selectRecipe={() => openRecipe(recipe)}
                 on:toggleFavorite={handleFavoriteToggle}
               >
-              <div slot="meta" class="meta-bar">
-                <button class="category-link" on:click={() => { selectedCategory = (recipe.strCategory || 'General').toLowerCase(); }}>
-                  {recipe.strCategory || 'General'}
-                </button>
-                {#if customRecipes.some((item) => item.strMeal === recipe.strMeal)}
-                  <button class="mini-button" on:click={() => startEditRecipe(customRecipes.findIndex((item) => item.strMeal === recipe.strMeal))}>Edit</button>
-                  <button class="mini-button danger" on:click={() => deleteCustomRecipe(customRecipes.findIndex((item) => item.strMeal === recipe.strMeal))}>Delete</button>
-                {/if}
-              </div>
-            </recipe-card>
+                <div slot="meta" class="meta-bar">
+                  <button class="category-link" on:click={() => { selectedCategory = (recipe.strCategory || 'General').toLowerCase(); }}>
+                    {recipe.strCategory || 'General'}
+                  </button>
+                  {#if customRecipes.some((item) => item.strMeal === recipe.strMeal)}
+                    <button class="mini-button" on:click={() => startEditRecipe(customRecipes.findIndex((item) => item.strMeal === recipe.strMeal))}>Edit</button>
+                    <button class="mini-button danger" on:click={() => deleteCustomRecipe(customRecipes.findIndex((item) => item.strMeal === recipe.strMeal))}>Delete</button>
+                  {/if}
+                </div>
+              </recipe-card>
+            {:else}
+              <article class="native-card" on:click={() => openRecipe(recipe)}>
+                <div class="native-image-wrap">
+                  <img src={recipe.strMealThumb} alt={recipe.strMeal} />
+                  <button
+                    type="button"
+                    class:active={favorites.includes(recipe.strMeal)}
+                    class="favorite-button"
+                    aria-label={favorites.includes(recipe.strMeal) ? 'Remove from favorites' : 'Add to favorites'}
+                    on:click|stopPropagation={() => updateFavorite(recipe.strMeal, !favorites.includes(recipe.strMeal))}
+                  >
+                    {favorites.includes(recipe.strMeal) ? '♥' : '♡'}
+                  </button>
+                </div>
+
+                <div class="native-card-content">
+                  <span class="native-cuisine">{recipe.strArea || 'International'}</span>
+                  <h3>{recipe.strMeal}</h3>
+                  <p>{recipe.strInstructions ? recipe.strInstructions.slice(0, 120) + '…' : 'Fresh and easy to prepare.'}</p>
+
+                  <div class="meta-bar">
+                    <button class="category-link" on:click|stopPropagation={() => { selectedCategory = (recipe.strCategory || 'General').toLowerCase(); }}>
+                      {recipe.strCategory || 'General'}
+                    </button>
+                    {#if customRecipes.some((item) => item.strMeal === recipe.strMeal)}
+                      <button class="mini-button" on:click|stopPropagation={() => startEditRecipe(customRecipes.findIndex((item) => item.strMeal === recipe.strMeal))}>Edit</button>
+                      <button class="mini-button danger" on:click|stopPropagation={() => deleteCustomRecipe(customRecipes.findIndex((item) => item.strMeal === recipe.strMeal))}>Delete</button>
+                    {/if}
+                  </div>
+                </div>
+              </article>
+            {/if}
           {/each}
         </div>
       {/if}
@@ -504,6 +537,72 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
   .mini-button.danger {
     background: #f9e7e5;
     color: #7b2f2f;
+  }
+
+  .native-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid rgba(35, 59, 61, 0.08);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 10px 24px rgba(17, 29, 31, 0.06);
+    cursor: pointer;
+  }
+
+  .native-image-wrap {
+    position: relative;
+    height: 180px;
+  }
+
+  .native-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .favorite-button {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 999px;
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+    cursor: pointer;
+  }
+
+  .favorite-button.active {
+    background: #fdf1ee;
+    color: #d14949;
+  }
+
+  .native-card-content {
+    padding: 1rem;
+  }
+
+  .native-cuisine {
+    display: inline-block;
+    font-size: 0.76rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #487d6f;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .native-card-content h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.3rem;
+  }
+
+  .native-card-content p {
+    margin: 0;
+    color: #526265;
+    line-height: 1.5;
   }
 
   .meta-bar {
