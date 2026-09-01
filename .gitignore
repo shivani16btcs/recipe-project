@@ -5,6 +5,7 @@ packages
 recipe-finder/node_modules
 recipe-components/node_modules
 recipe-finder/.svelte-kit
+recipe-finder/.vercel
 recipe-components/dist
 recipe-finder/dist
 *.log
