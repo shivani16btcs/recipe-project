@@ -65,3 +65,4 @@ The library is named as:
 - The app uses the public TheMealDB API for recipe discovery.
 - Favorite recipes and weekly meal-plan details are stored in browser localStorage.
 - The app intentionally uses npm package consumption rather than source imports for the Stencil UI library.
+
