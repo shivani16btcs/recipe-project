@@ -51,7 +51,7 @@ The library is named as:
 
 ## Published package
 
-- npm: https://www.npmjs.com/package/@recipe-works/recipe-components
+- npm: https://www.npmjs.com/package/@shivani16btcs/recipe-components
 
 ## GitHub repository
 
