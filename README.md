@@ -1,4 +1,7 @@
-# Recipe Finder & Meal Planner :  https://recipe-project-lilac-theta.vercel.app/
+# Recipe Finder & Meal Planner:  https://recipe-project-lilac-theta.vercel.app/
+
+# Recipe npm packages: https://www.npmjs.com/package/@shivani16btcs/recipe-components
+
 
 This project contains a SvelteKit app and a reusable StencilJS component library in separate folders:
 
