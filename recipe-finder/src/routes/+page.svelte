@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import RecipeForm from '$lib/RecipeForm.svelte';
 
   type Recipe = {
     idMeal: string;
@@ -40,6 +41,12 @@
   let customRecipes: Recipe[] = [];
   let showForm = false;
   let editingIndex: number | null = null;
+  let initialTitle = '';
+  let initialDescription = '';
+  let initialIngredients = '';
+  let initialInstructions = '';
+  let initialImage = '';
+  let showFavorites = false;
 
   const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -124,6 +131,9 @@
     };
 
     if (editingIndex !== null) {
+      // preserve the original id when editing
+      const existingId = customRecipes[editingIndex].idMeal;
+      normalized.idMeal = existingId;
       customRecipes = customRecipes.map((recipe, index) => (index === editingIndex ? normalized : recipe));
       editingIndex = null;
     } else {
@@ -136,11 +146,22 @@
 
   const startCreateRecipe = () => {
     editingIndex = null;
+    initialTitle = '';
+    initialDescription = '';
+    initialIngredients = '';
+    initialInstructions = '';
+    initialImage = '';
     showForm = true;
   };
 
   const startEditRecipe = (index: number) => {
     editingIndex = index;
+    const r = customRecipes[index];
+    initialTitle = r.strMeal;
+    initialDescription = r.strInstructions || '';
+    initialIngredients = r.strIngredient1 || '';
+    initialInstructions = r.strInstructions || '';
+    initialImage = r.strMealThumb || '';
     showForm = true;
   };
 
@@ -172,6 +193,14 @@
   };
 
   const categoryOptions = ['all', 'beef', 'chicken', 'dessert', 'breakfast', 'vegan'];
+
+$: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
+  const matchesCategory = selectedCategory === 'all' || recipe.strCategory?.toLowerCase() === selectedCategory.toLowerCase();
+  const matchesSearch = !searchTerm || recipe.strMeal?.toLowerCase().includes(searchTerm.toLowerCase());
+  const isFavorite = favorites.includes(recipe.strMeal);
+  if (showFavorites) return isFavorite && matchesCategory && matchesSearch;
+  return matchesCategory && matchesSearch;
+});
 </script>
 
 <svelte:head>
@@ -181,10 +210,11 @@
 <div class="page-shell">
   <header class="topbar">
     <div>
-      <p class="eyebrow">Healthy planning</p>
+      <p class="eyebrow" on:click={startCreateRecipe}>add a recipe</p>
       <h1>Recipe Finder & Meal Planner</h1>
     </div>
     <div class="actions">
+      <app-button label={showFavorites ? 'All' : 'Favorites'} variant="secondary" on:clickAction={() => (showFavorites = !showFavorites)} />
       <app-button label="Add recipe" variant="primary" on:clickAction={startCreateRecipe} />
     </div>
   </header>
@@ -195,20 +225,21 @@
   </section>
 
   <section class="stats">
-    <div class="stat-card"><span>Recipes</span><strong>{filteredRecipes.length}</strong></div>
+    <div class="stat-card"><span>Recipes</span><strong>{displayedRecipes.length}</strong></div>
     <div class="stat-card"><span>Favorites</span><strong>{favorites.length}</strong></div>
     <div class="stat-card"><span>Planned meals</span><strong>{Object.keys(mealPlan).length}</strong></div>
   </section>
 
   {#if showForm}
-    <section class="panel">
-      <h2>{editingIndex !== null ? 'Edit recipe' : 'Add a new recipe'}</h2>
-      <recipe-form
-        initialTitle=""
-        initialDescription=""
-        initialIngredients=""
-        initialInstructions=""
-        initialImage=""
+    <div class="backdrop" on:click={() => (showForm = false)}></div>
+    <section class="panel modal-panel" role="dialog" aria-modal="true">
+      <h2>{editingIndex !== null ? 'Edit recipe' : 'Add recipe'}</h2>
+      <RecipeForm
+        {initialTitle}
+        {initialDescription}
+        {initialIngredients}
+        {initialInstructions}
+        {initialImage}
         on:saveRecipe={saveCustomRecipe}
         on:cancelRecipe={() => (showForm = false)}
       />
@@ -219,11 +250,11 @@
     <div class="results">
       {#if loading}
         <p>Loading recipes…</p>
-      {:else if filteredRecipes.length === 0}
+      {:else if displayedRecipes.length === 0}
         <p>No recipes match your current filters.</p>
       {:else}
         <div class="recipe-grid">
-          {#each filteredRecipes as recipe}
+          {#each displayedRecipes as recipe}
               <recipe-card
                 recipe-title={recipe.strMeal}
                 image={recipe.strMealThumb}
@@ -234,9 +265,12 @@
                 on:toggleFavorite={(event) => updateFavorite(recipe.strMeal, event.detail.favorite)}
               >
               <div slot="meta" class="meta-bar">
-                <span>{recipe.strCategory || 'General'}</span>
+                <button class="category-link" on:click={() => { selectedCategory = (recipe.strCategory || 'General').toLowerCase(); }}>
+                  {recipe.strCategory || 'General'}
+                </button>
                 {#if customRecipes.some((item) => item.strMeal === recipe.strMeal)}
                   <button class="mini-button" on:click={() => startEditRecipe(customRecipes.findIndex((item) => item.strMeal === recipe.strMeal))}>Edit</button>
+                  <button class="mini-button danger" on:click={() => deleteCustomRecipe(customRecipes.findIndex((item) => item.strMeal === recipe.strMeal))}>Delete</button>
                 {/if}
               </div>
             </recipe-card>
@@ -358,6 +392,22 @@
     padding: 1.25rem;
   }
 
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    z-index: 40;
+  }
+
+  .modal-panel {
+    position: fixed;
+    left: 50%;
+    top: 10%;
+    transform: translateX(-50%);
+    width: min(720px, 96%);
+    z-index: 50;
+  }
+
   .content-grid {
     display: grid;
     grid-template-columns: minmax(0, 2fr) minmax(280px, 0.9fr);
@@ -412,6 +462,16 @@
     font-size: 0.8rem;
     color: #526265;
   }
+
+  .category-link {
+    background: transparent;
+    border: none;
+    color: #526265;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+  }
+  .category-link:hover { text-decoration: underline }
 
   .detail-layout {
     display: grid;
