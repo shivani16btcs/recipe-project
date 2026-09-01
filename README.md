@@ -1,4 +1,4 @@
-# Recipe Finder & Meal Planner
+# Recipe Finder & Meal Planner 
 
 This project contains a SvelteKit app and a reusable StencilJS component library in separate folders:
 
