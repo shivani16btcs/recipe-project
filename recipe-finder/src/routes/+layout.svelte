@@ -3,7 +3,7 @@
   import { onMount } from 'svelte';
 
   onMount(async () => {
-    await import('@recipe-works/recipe-components');
+    await import('@shivani16btcs/recipe-components');
   });
 </script>
 

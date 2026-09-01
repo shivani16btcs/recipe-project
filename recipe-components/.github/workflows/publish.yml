@@ -1,5 +1,5 @@
 "dependencies": {
-  "@shivani16btcs/recipe-components": "^1.0.1"
+  "@shivani16btcs/recipe-components": "^1.0.3"
 }
 name: Publish Stencil package
 
