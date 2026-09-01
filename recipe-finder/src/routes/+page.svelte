@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { browser } from '$app/environment';
   import { onMount } from 'svelte';
   import RecipeForm from '$lib/RecipeForm.svelte';
 
@@ -192,6 +193,11 @@
     selectedCategory = event.detail;
   };
 
+  const handleNativeFilter = (event: Event) => {
+    const target = event.target as HTMLSelectElement;
+    selectedCategory = target.value;
+  };
+
   const handleFavoriteToggle = (event: Event) => {
     const customEvent = event as CustomEvent<{ title: string; favorite: boolean }>;
     updateFavorite(customEvent.detail.title, customEvent.detail.favorite);
@@ -225,7 +231,19 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
 
   <section class="toolbar">
     <recipe-search value={searchTerm} placeholder="Search recipes" on:searchInput={handleSearch}></recipe-search>
-    <recipe-filter selected={selectedCategory} options={categoryOptions} on:filterChange={handleFilter}></recipe-filter>
+
+    {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-filter')}
+      <recipe-filter selected={selectedCategory} options={categoryOptions} on:filterChange={handleFilter}></recipe-filter>
+    {:else}
+      <label class="filter-wrap native-filter">
+        <span>Filter</span>
+        <select value={selectedCategory} on:change={handleNativeFilter}>
+          {#each categoryOptions as option}
+            <option value={option}>{option}</option>
+          {/each}
+        </select>
+      </label>
+    {/if}
   </section>
 
   <section class="stats">
@@ -374,6 +392,22 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
     display: grid;
     grid-template-columns: 1.4fr 0.8fr;
     gap: 1rem;
+  }
+
+  .filter-wrap {
+    display: grid;
+    gap: 0.5rem;
+    color: #23393c;
+    font-weight: 600;
+  }
+
+  .native-filter select {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid rgba(35, 59, 61, 0.15);
+    padding: 0.8rem 0.9rem;
+    font: inherit;
+    background: #fff;
   }
 
   .stats {
