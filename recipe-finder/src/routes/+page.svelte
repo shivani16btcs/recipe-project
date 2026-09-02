@@ -49,14 +49,28 @@
   let initialImage = '';
   let showFavorites = false;
   let componentsFailed = false;
-
+  let plannerReady = false;
   const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
   const getLocalStorage = () => {
     if (typeof localStorage === 'undefined') return;
-    favorites = JSON.parse(localStorage.getItem('recipe-favorites') || '[]');
-    mealPlan = JSON.parse(localStorage.getItem('recipe-meal-plan') || '{}');
-    customRecipes = JSON.parse(localStorage.getItem('recipe-custom-list') || '[]');
+
+    try {
+      const storedFavorites = localStorage.getItem('recipe-favorites');
+      const storedMealPlan = localStorage.getItem('recipe-meal-plan');
+      const storedCustomRecipes = localStorage.getItem('recipe-custom-list');
+
+      favorites = storedFavorites ? JSON.parse(storedFavorites) : [];
+      mealPlan = storedMealPlan ? JSON.parse(storedMealPlan) : {};
+      customRecipes = storedCustomRecipes ? JSON.parse(storedCustomRecipes) : [];
+
+      console.log('Loaded meal plan:', mealPlan);
+    } catch (error) {
+      console.error('Failed to load localStorage:', error);
+      favorites = [];
+      mealPlan = {};
+      customRecipes = [];
+    }
   };
 
   const saveLocalStorage = () => {
@@ -74,11 +88,11 @@
     loading = false;
   };
 
-  onMount(() => {
+  onMount(async () => {
     getLocalStorage();
-    fetchRecipes();
-    // Check if components failed to load
-    componentsFailed = !!(window as any).recipeComponentsFailed;
+    await fetchRecipes();
+    // Wait until recipes are loaded before rendering planner options
+    plannerReady = true;
   });
 
   $: filteredRecipes = [...recipes, ...customRecipes].filter((recipe) => {
@@ -203,6 +217,10 @@
   const handleNativeFilter = (event: Event) => {
     const target = event.target as HTMLSelectElement;
     selectedCategory = target.value;
+  };
+
+  const getPlannedRecipe = (day: string) => {
+    return mealPlan[day] || '';
   };
 
   const handleFavoriteToggle = (event: Event) => {
@@ -362,22 +380,24 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
     <div class="day-list">
       {#each dayNames as day}
         <div class="day-item">
-          <span>{day}</span>
+          <span class="day-name">{day}</span>
 
-          <select
-            value={mealPlan[day] || ''}
-            on:change={(event) =>
-              assignMeal(day, event.currentTarget.value)
-            }
-          >
-            <option value="">Select recipe</option>
+           {#key recipes.length + customRecipes.length}
+            <select
+              value={mealPlan[day] || ''}
+              on:change={(event) => {
+                assignMeal(day, event.currentTarget.value);
+              }}
+            >
+              <option value="">Select recipe</option>
 
-            {#each [...recipes, ...customRecipes] as recipe}
-              <option value={recipe.strMeal}>
-                {recipe.strMeal}
-              </option>
-            {/each}
-          </select>
+              {#each [...recipes, ...customRecipes] as recipe}
+                <option value={recipe.strMeal}>
+                  {recipe.strMeal}
+                </option>
+              {/each}
+            </select>
+          {/key}
 
           {#if mealPlan[day]}
             <button
