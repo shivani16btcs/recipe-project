@@ -48,6 +48,7 @@
   let initialInstructions = '';
   let initialImage = '';
   let showFavorites = false;
+  let componentsFailed = false;
 
   const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -76,6 +77,8 @@
   onMount(() => {
     getLocalStorage();
     fetchRecipes();
+    // Check if components failed to load
+    componentsFailed = !!(window as any).recipeComponentsFailed;
   });
 
   $: filteredRecipes = [...recipes, ...customRecipes].filter((recipe) => {
@@ -224,7 +227,7 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
       <h1>Recipe Finder & Meal Planner</h1>
     </div>
     <div class="actions">
-      {#if browser && typeof customElements !== 'undefined' && customElements.get('app-button') && !window.recipeComponentsFailed}
+      {#if browser && typeof customElements !== 'undefined' && customElements.get('app-button') && !componentsFailed}
         <app-button label={showFavorites ? 'All' : 'Favorites'} variant="secondary" on:clickAction={() => (showFavorites = !showFavorites)}></app-button>
         <app-button label="Add recipe" variant="primary" on:clickAction={startCreateRecipe}></app-button>
       {:else}
@@ -235,7 +238,7 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
   </header>
 
   <section class="toolbar">
-    {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-search') && !window.recipeComponentsFailed}
+    {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-search') && !componentsFailed}
       <recipe-search value={searchTerm} placeholder="Search recipes" on:searchInput={handleSearch}></recipe-search>
     {:else}
       <label class="search-wrap native-search">
@@ -243,12 +246,12 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
           type="text" 
           placeholder="Search recipes" 
           value={searchTerm}
-          on:input={(e) => handleSearch({detail: e.target.value})}
+          on:input={(e) => handleSearch({detail: (e.target as HTMLInputElement).value})}
         />
       </label>
     {/if}
 
-    {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-filter') && !window.recipeComponentsFailed}
+    {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-filter') && !componentsFailed}
       <recipe-filter selected={selectedCategory} options={categoryOptions} on:filterChange={handleFilter}></recipe-filter>
     {:else}
       <label class="filter-wrap native-filter">
@@ -293,7 +296,7 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
       {:else}
         <div class="recipe-grid">
           {#each displayedRecipes as recipe}
-            {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-card') && !window.recipeComponentsFailed}
+            {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-card') && !componentsFailed}
               <recipe-card
                 recipe-title={recipe.strMeal}
                 image={recipe.strMealThumb}
@@ -505,7 +508,6 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
 
   .native-search input {
     flex: 1;
-  }
   }
 
   .native-filter select {

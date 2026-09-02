@@ -12,7 +12,7 @@
     } catch (error) {
       console.error('Failed to register recipe components:', error);
       // Mark that components failed to load by setting a flag
-      window.recipeComponentsFailed = true;
+      (window as any).recipeComponentsFailed = true;
     }
   });
 </script>
