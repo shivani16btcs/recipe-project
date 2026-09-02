@@ -174,10 +174,14 @@
     saveLocalStorage();
   };
 
-  const assignMeal = (day: string) => {
-    const toPlan = selectedRecipe?.strMeal;
-    if (!toPlan) return;
-    mealPlan = { ...mealPlan, [day]: toPlan };
+  const assignMeal = (day: string, recipeTitle: string) => {
+    if (!recipeTitle) return;
+
+    mealPlan = {
+      ...mealPlan,
+      [day]: recipeTitle
+    };
+
     saveLocalStorage();
   };
 
@@ -352,22 +356,42 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
       {/if}
     </div>
 
-    <aside class="planner">
-      <h2>Weekly Meal Planner</h2>
-      <div class="day-list">
-        {#each dayNames as day}
-          <div class="day-item">
-            <span>{day}</span>
-            <strong>{mealPlan[day] || 'Open'}</strong>
-            {#if mealPlan[day]}
-              <button type="button" class="mini-button danger" on:click={() => removeMeal(day)}>Remove</button>
-            {:else if selectedRecipe}
-              <button type="button" class="mini-button" on:click={() => assignMeal(day)}>Assign</button>
-            {/if}
-          </div>
-        {/each}
-      </div>
-    </aside>
+  <aside class="planner">
+    <h2>Weekly Meal Planner</h2>
+
+    <div class="day-list">
+      {#each dayNames as day}
+        <div class="day-item">
+          <span>{day}</span>
+
+          <select
+            value={mealPlan[day] || ''}
+            on:change={(event) =>
+              assignMeal(day, event.currentTarget.value)
+            }
+          >
+            <option value="">Select recipe</option>
+
+            {#each [...recipes, ...customRecipes] as recipe}
+              <option value={recipe.strMeal}>
+                {recipe.strMeal}
+              </option>
+            {/each}
+          </select>
+
+          {#if mealPlan[day]}
+            <button
+              type="button"
+              class="mini-button danger"
+              on:click={() => removeMeal(day)}
+            >
+              Remove
+            </button>
+          {/if}
+        </div>
+      {/each}
+    </div>
+  </aside>
   </section>
 
   {#if selectedRecipe}
@@ -591,12 +615,27 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
 
   .day-item {
     display: grid;
-    grid-template-columns: 1fr auto auto;
-    gap: 0.5rem;
+    grid-template-columns: 90px minmax(0, 1fr) auto;
+    gap: 0.75rem;
     align-items: center;
     padding: 0.75rem 0.85rem;
     background: #f7f5f2;
     border-radius: 12px;
+  }
+
+  .day-item select {
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid rgba(35, 59, 61, 0.15);
+    border-radius: 8px;
+    background: white;
+    color: #23393c;
+    font: inherit;
+  }
+
+  .day-item select:focus {
+    outline: none;
+    border-color: #487d6f;
   }
 
   .mini-button {
