@@ -246,7 +246,7 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
           type="text" 
           placeholder="Search recipes" 
           value={searchTerm}
-          on:input={(e) => handleSearch({detail: (e.target as HTMLInputElement).value})}
+          on:input={(e) => handleSearch({ detail: e.currentTarget.value })}
         />
       </label>
     {/if}
