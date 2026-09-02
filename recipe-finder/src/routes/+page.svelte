@@ -251,7 +251,7 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
       </label>
     {/if}
 
-    {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-filter') && !componentsFailed && false}
+    {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-filter') && !componentsFailed}
       <recipe-filter selected={selectedCategory} options={categoryOptions} on:filterChange={handleFilter}></recipe-filter>
     {:else}
       <label class="filter-wrap native-filter">
@@ -295,7 +295,7 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
       {:else}
         <div class="recipe-grid">
           {#each displayedRecipes as recipe}
-            {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-card') && !componentsFailed}
+            {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-card') && !componentsFailed && false}
               <recipe-card
                 recipe-title={recipe.strMeal}
                 image={recipe.strMealThumb}
