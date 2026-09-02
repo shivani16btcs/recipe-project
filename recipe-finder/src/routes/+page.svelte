@@ -255,7 +255,6 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
       <recipe-filter selected={selectedCategory} options={categoryOptions} on:filterChange={handleFilter}></recipe-filter>
     {:else}
       <label class="filter-wrap native-filter">
-        <span>Filter</span>
         <select value={selectedCategory} on:change={handleNativeFilter}>
           {#each categoryOptions as option}
             <option value={option}>{option}</option>
