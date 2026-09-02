@@ -251,7 +251,7 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
       </label>
     {/if}
 
-    {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-filter') && !componentsFailed}
+    {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-filter') && !componentsFailed && false}
       <recipe-filter selected={selectedCategory} options={categoryOptions} on:filterChange={handleFilter}></recipe-filter>
     {:else}
       <label class="filter-wrap native-filter">
