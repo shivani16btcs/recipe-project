@@ -224,13 +224,29 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
       <h1>Recipe Finder & Meal Planner</h1>
     </div>
     <div class="actions">
-      <app-button label={showFavorites ? 'All' : 'Favorites'} variant="secondary" on:clickAction={() => (showFavorites = !showFavorites)}></app-button>
-      <app-button label="Add recipe" variant="primary" on:clickAction={startCreateRecipe}></app-button>
+      {#if browser && typeof customElements !== 'undefined' && customElements.get('app-button') && !window.recipeComponentsFailed}
+        <app-button label={showFavorites ? 'All' : 'Favorites'} variant="secondary" on:clickAction={() => (showFavorites = !showFavorites)}></app-button>
+        <app-button label="Add recipe" variant="primary" on:clickAction={startCreateRecipe}></app-button>
+      {:else}
+        <button type="button" class="native-button secondary" on:click={() => (showFavorites = !showFavorites)}>{showFavorites ? 'All' : 'Favorites'}</button>
+        <button type="button" class="native-button primary" on:click={startCreateRecipe}>Add recipe</button>
+      {/if}
     </div>
   </header>
 
   <section class="toolbar">
-    <recipe-search value={searchTerm} placeholder="Search recipes" on:searchInput={handleSearch}></recipe-search>
+    {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-search') && !window.recipeComponentsFailed}
+      <recipe-search value={searchTerm} placeholder="Search recipes" on:searchInput={handleSearch}></recipe-search>
+    {:else}
+      <label class="search-wrap native-search">
+        <input 
+          type="text" 
+          placeholder="Search recipes" 
+          value={searchTerm}
+          on:input={(e) => handleSearch({detail: e.target.value})}
+        />
+      </label>
+    {/if}
 
     {#if browser && typeof customElements !== 'undefined' && customElements.get('recipe-filter') && !window.recipeComponentsFailed}
       <recipe-filter selected={selectedCategory} options={categoryOptions} on:filterChange={handleFilter}></recipe-filter>
@@ -432,6 +448,64 @@ $: displayedRecipes = [...recipes, ...customRecipes].filter((recipe) => {
     gap: 0.5rem;
     color: #23393c;
     font-weight: 600;
+  }
+
+  .filter-wrap select,
+  .native-search input {
+    padding: 0.75rem 1rem;
+    border: 2px solid #d4d4d4;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    background: white;
+    color: #23393c;
+  }
+
+  .filter-wrap select:focus,
+  .native-search input:focus {
+    outline: none;
+    border-color: #487d6f;
+  }
+
+  .native-button {
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #487d6f;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .native-button.primary {
+    background: #487d6f;
+    color: white;
+  }
+
+  .native-button.primary:hover {
+    background: #3a5f56;
+  }
+
+  .native-button.secondary {
+    background: transparent;
+    color: #487d6f;
+  }
+
+  .native-button.secondary:hover {
+    background: #f0f0f0;
+  }
+
+  .native-search {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #23393c;
+    font-weight: 600;
+  }
+
+  .native-search input {
+    flex: 1;
+  }
   }
 
   .native-filter select {
